@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyFlow · Study tracker, planner and GK quiz</title>
+<meta name="description" content="Track study time by subject, review yesterday, plan tomorrow's timetable and test your general knowledge.">
+<meta name="theme-color" content="#14213d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f2f5fb;--card:#fff;--ink:#14213d;--mut:#64708a;--line:#e1e7f2;--acc:#3a5bff;--acc2:#e8edff;--ok:#1f9d6b;--bad:#d64545;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1324;--card:#161e36;--ink:#eaf0ff;--mut:#93a0c0;--line:#25304f;--acc:#6f8bff;--acc2:#1f2b55;--ok:#3ccf91;--bad:#ff7070;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1324;--card:#161e36;--ink:#eaf0ff;--mut:#93a0c0;--line:#25304f;--acc:#6f8bff;--acc2:#1f2b55;--ok:#3ccf91;--bad:#ff7070;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'DM Sans',system-ui,sans-serif;padding-bottom:84px}
+h1,h2,h3{font-family:'Bricolage Grotesque','DM Sans',sans-serif;margin:0;letter-spacing:-.02em}
+main{max-width:640px;margin:0 auto;padding:18px 16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top h1{font-size:26px}.top p{margin:0;color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.hero{background:var(--ink);color:var(--bg);border:0;text-align:center;padding:24px 16px}
+.hero .clock{font:800 56px/1 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums;margin:8px 0 14px}
+.hero small{opacity:.7}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:12px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:700}
+button.g{background:var(--acc2);color:var(--acc)}button.x{background:none;color:var(--mut);padding:4px 8px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1;min-width:0}.row>button{flex:none}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{display:inline-flex;gap:6px;align-items:center;padding:7px 12px;border-radius:99px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:500}
+.chip.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 15%,var(--card))}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+h3{font-size:17px;margin-bottom:10px}
+.bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin:4px 0 12px}.bar i{display:block;height:100%;background:var(--c);border-radius:9px}
+.bl{display:flex;justify-content:space-between;font-weight:500}.bl span:last-child{color:var(--mut)}
+.big{font:800 34px/1 'Bricolage Grotesque',sans-serif}
+.mut{color:var(--mut);font-size:13px}
+.blk{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.blk:first-of-type{border-top:0}.blk .t{width:56px;font-weight:700;font-variant-numeric:tabular-nums;font-size:13px;color:var(--mut)}
+.blk .m{flex:1;border-left:4px solid var(--c);padding-left:10px}.blk.done .m{opacity:.45;text-decoration:line-through}
+.blk.brk .m{border-color:var(--line);color:var(--mut)}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--ok);padding:0}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{flex:1;max-width:150px;background:none;color:var(--mut);padding:8px 4px;font-size:12px;display:flex;flex-direction:column;gap:2px;align-items:center}
+nav button b{font-size:20px;line-height:1}nav button.on{color:var(--acc)}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);margin-top:8px;font-weight:500}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--bg))}.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 15%,var(--bg))}
+.q{font:600 20px/1.3 'Bricolage Grotesque',sans-serif;margin:8px 0}
+.stat{display:flex;gap:10px}.stat>div{flex:1;background:var(--acc2);border-radius:14px;padding:12px}
+.stat .mut{color:var(--mut)}
+.pulse{animation:p 1.6s infinite}@keyframes p{50%{opacity:.55}}@media(prefers-reduced-motion:reduce){.pulse{animation:none}}
+.hide{display:none}
+@media(min-width:820px){
+ body{padding-top:64px;padding-bottom:0}
+ nav{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--line);padding:8px 24px;justify-content:center;gap:8px}
+ nav button{flex:none;max-width:none;flex-direction:row;gap:8px;font-size:14px;padding:8px 16px;border-radius:12px}
+ nav button b{font-size:16px}
+ nav button.on{background:var(--acc2)}
+ main{max-width:860px;padding:28px 24px}
+ .top h1{font-size:32px}
+}
+</style></head><body>
+<main id="app"></main>
+<nav id="nav"></nav>
+<script>
+const $=s=>document.querySelector(s);
+const COL=['#3a5bff','#e8590c','#1f9d6b','#c2255c','#9c36b5','#e0a800','#0c8599'];
+const BANK=[
+["What is the capital of Australia?",["Sydney","Canberra","Melbourne","Perth"],1,"Canberra was purpose-built as the capital."],
+["Which planet is known as the Red Planet?",["Venus","Jupiter","Mars","Mercury"],2,"Iron oxide on its surface gives it a red colour."],
+["Who wrote ‘Romeo and Juliet’?",["Dickens","Shakespeare","Austen","Homer"],1,"William Shakespeare wrote it around 1595."],
+["Which is the largest ocean on Earth?",["Atlantic","Indian","Arctic","Pacific"],3,"The Pacific covers about a third of the globe."],
+["What is the chemical symbol for gold?",["Ag","Gd","Au","Go"],2,"Au comes from the Latin ‘aurum’."],
+["How many continents are there?",["5","6","7","8"],2,"Africa, Antarctica, Asia, Australia, Europe, North and South America."],
+["Which is the longest river in the world (commonly cited)?",["Amazon","Nile","Yangtze","Danube"],1,"The Nile is about 6,650 km, though the Amazon is disputed."],
+["Who painted the Mona Lisa?",["Van Gogh","Picasso","Da Vinci","Michelangelo"],2,"Leonardo da Vinci painted it in the early 1500s."],
+["Which gas do plants absorb from the air?",["Oxygen","Nitrogen","Carbon dioxide","Helium"],2,"They use CO₂ in photosynthesis."],
+["What is the smallest prime number?",["0","1","2","3"],2,"2 is the only even prime."],
+["Which country is the largest by area?",["Canada","China","USA","Russia"],3,"Russia is the largest country by area."],
+["How many bones are in an adult human body?",["186","206","226","256"],1,"An adult has 206 bones."],
+["Who was the first person to walk on the Moon?",["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","Alan Shepard"],2,"Neil Armstrong, in July 1969."],
+["Which language has the most native speakers?",["English","Spanish","Hindi","Mandarin Chinese"],3,"Mandarin has the most native speakers."],
+["What is the hardest natural substance?",["Gold","Iron","Diamond","Quartz"],2,"Diamond ranks 10 on the Mohs scale."],
+["In which year did World War II end?",["1943","1945","1947","1950"],1,"It ended in 1945."]
+];
+const day=(o=0)=>{const d=new Date();d.setDate(d.getDate()+o);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S={subs:[{id:1,n:'Maths',c:COL[0]},{id:2,n:'Science',c:COL[2]},{id:3,n:'English',c:COL[1]}],log:[],run:null,plan:null,qs:[],best:0,sel:1,tab:'today'};
+try{const r=localStorage.getItem('studyflow');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem('studyflow',JSON.stringify(S))}catch(e){}};
+const sub=id=>S.subs.find(s=>s.id==id)||{n:'Other',c:'#888'};
+const fmt=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+'h '+m+'m':m+'m'};
+const clk=s=>{s=Math.max(0,Math.floor(s));return[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':')};
+const totals=d=>{const t={};S.log.filter(l=>l.d==d).forEach(l=>t[l.s]=(t[l.s]||0)+l.sec);return t};
+const sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+let quiz=null,tick=null;
+
+function go(t){S.tab=t;save();render()}
+function render(){
+ $('#nav').innerHTML=[['today','⏱','Study'],['insights','📊','Yesterday'],['plan','🗓','Plan'],['quiz','🧠','GK Quiz']].map(([k,i,l])=>`<button class="${S.tab==k?'on':''}" onclick="go('${k}')"><b>${i}</b>${l}</button>`).join('');
+ $('#app').innerHTML=({today:vToday,insights:vIns,plan:vPlan,quiz:vQuiz})[S.tab]();
+ clearInterval(tick);if(S.run&&S.tab=='today')tick=setInterval(()=>{const e=$('#clk');if(e)e.textContent=clk((Date.now()-S.run.t)/1000)},500);
+}
+const head=(t,p)=>`<div class="top"><div><h1>${t}</h1><p>${p}</p></div><button class="g" onclick="theme()" aria-label="Toggle theme">◐</button></div>`;
+function theme(){const r=document.documentElement,d=r.dataset.theme?r.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark'}
+
+function vToday(){
+ const t=totals(day()),run=S.run;
+ return head('StudyFlow','Track every minute you study')+`
+ <div class="card hero"><small>${run?'Studying '+esc(sub(run.s).n):'Ready when you are'}</small>
+ <div class="clock ${run?'pulse':''}" id="clk">${run?clk((Date.now()-run.t)/1000):'00:00:00'}</div>
+ ${run?`<button style="background:#fff;color:#14213d" onclick="stop()">Stop and save</button>`:`<button onclick="start()">Start studying</button>`}</div>
+ <div class="card"><h3>Subject</h3><div class="chips">${S.subs.map(s=>`<button class="chip ${S.sel==s.id?'on':''}" style="--c:${s.c}" onclick="S.sel=${s.id};save();render()"><i class="dot" style="--c:${s.c}"></i>${esc(s.n)}</button>`).join('')}</div>
+ <div class="row"><input id="ns" placeholder="Add a subject (e.g. History)" maxlength="24"><button class="g" onclick="addSub()">Add</button></div></div>
+ <div class="card"><h3>Today so far: <span style="color:var(--acc)">${fmt(sum(t))}</span></h3>
+ ${S.subs.map(s=>t[s.id]?`<div class="bl"><span><i class="dot" style="--c:${s.c}"></i> ${esc(s.n)}</span><span>${fmt(t[s.id])}</span></div>`:'').join('')||'<p class="mut">Nothing logged yet. Start the timer or add time below.</p>'}</div>
+ <div class="card"><h3>Add time manually</h3><div class="row"><select id="md"><option value="0">Today</option><option value="-1">Yesterday</option></select><input id="mm" type="number" min="1" max="600" placeholder="Minutes"><button onclick="manual()">Add</button></div>
+ <p class="mut" style="margin:8px 0 0">Uses the subject selected above.</p></div>`;
+}
+function start(){S.run={s:S.sel,t:Date.now()};save();render()}
+function stop(){const sec=(Date.now()-S.run.t)/1000;if(sec>=5)S.log.push({d:day(),s:S.run.s,sec});S.run=null;save();render()}
+function addSub(){const v=$('#ns').value.trim();if(!v)return;const id=Date.now();S.subs.push({id,n:v,c:COL[S.subs.length%COL.length]});S.sel=id;save();render()}
+function manual(){const m=+$('#mm').value;if(!(m>0))return;S.log.push({d:day(+$('#md').value),s:S.sel,sec:m*60});save();render()}
+
+function vIns(){
+ const y=totals(day(-1)),tot=sum(y),max=Math.max(1,...Object.values(y));
+ const best=Object.entries(y).sort((a,b)=>b[1]-a[1])[0],miss=S.subs.filter(s=>!y[s.id]);
+ let wk=[];for(let i=6;i>=0;i--){wk.push([day(-i),sum(totals(day(-i)))])}
+ const wm=Math.max(1,...wk.map(w=>w[1]));
+ return head('Yesterday','How your day added up')+`
+ <div class="card"><div class="mut">Total study time</div><div class="big">${fmt(tot)}</div>
+ <div class="stat" style="margin-top:12px"><div><div class="mut">Most time</div><b>${best?esc(sub(best[0]).n):'-'}</b></div><div><div class="mut">Not touched</div><b>${miss.length?miss.map(s=>esc(s.n)).join(', '):'None'}</b></div></div></div>
+ <div class="card"><h3>By subject</h3>${S.subs.map(s=>`<div class="bl"><span><i class="dot" style="--c:${s.c}"></i> ${esc(s.n)}</span><span>${fmt(y[s.id]||0)}</span></div><div class="bar"><i style="--c:${s.c};width:${(y[s.id]||0)/max*100}%"></i></div>`).join('')}
+ ${tot?'':'<p class="mut">No study logged yesterday. Use “Add time manually” on the Study tab and choose Yesterday.</p>'}</div>
+ <div class="card"><h3>Last 7 days</h3><div style="display:flex;gap:6px;align-items:flex-end;height:110px">${wk.map(([d,v])=>`<div style="flex:1;text-align:center"><div style="height:${Math.max(4,v/wm*80)}px;background:var(--acc);border-radius:6px;opacity:${d==day(-1)?1:.45}"></div><div class="mut" style="font-size:11px">${['Su','Mo','Tu','We','Th','Fr','Sa'][new Date(d+'T12:00').getDay()]}</div></div>`).join('')}</div></div>
+ <button style="width:100%" onclick="go('plan')">Plan tomorrow from this</button>`;
+}
+
+function vPlan(){
+ const p=S.plan&&S.plan.date==day(1)?S.plan:null;
+ const done=p?p.blocks.filter(b=>b.s&&b.done).length:0,all=p?p.blocks.filter(b=>b.s).length:0;
+ return head('Tomorrow’s plan','Built from yesterday’s study time')+`
+ <div class="card"><h3>Generate a timetable</h3><div class="row"><div><label class="mut">Study hours</label><input id="ph" type="number" min="1" max="12" step="0.5" value="${p?p.h:3}"></div><div><label class="mut">Start at</label><input id="pt" type="time" value="${p?p.st:'16:00'}"></div><button style="align-self:flex-end" onclick="gen()">Generate</button></div>
+ <p class="mut" style="margin:8px 0 0">Subjects you studied less yesterday get more time tomorrow. 10-minute breaks are added between blocks.</p></div>
+ ${p?`<div class="card"><h3>${new Date(p.date+'T12:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'})} <span class="mut">${done}/${all} done</span></h3>
+ ${p.blocks.map((b,i)=>b.s?`<div class="blk ${b.done?'done':''}" style="--c:${sub(b.s).c}"><span class="t">${b.at}</span><div class="m"><b>${esc(sub(b.s).n)}</b><div class="mut">${b.min} min</div></div><input type="checkbox" ${b.done?'checked':''} onchange="S.plan.blocks[${i}].done=this.checked;save();render()" aria-label="Done"><button class="x" onclick="S.plan.blocks.splice(${i},1);save();render()" aria-label="Remove">✕</button></div>`:`<div class="blk brk"><span class="t">${b.at}</span><div class="m">Break · ${b.min} min</div></div>`).join('')}</div>`:`<div class="card mut">No plan yet. Set your hours and tap Generate.</div>`}`;
+}
+function gen(){
+ const h=+$('#ph').value||3,st=$('#pt').value||'16:00',y=totals(day(-1)),tot=sum(y),n=S.subs.length;
+ const w=S.subs.map(s=>({s:s.id,w:.5*(tot?(y[s.id]||0)/tot:1/n)+.5/n}));
+ let left=h*60,q=[];
+ w.forEach(o=>{let m=Math.max(15,Math.round(left*o.w/5)*5);o.m=m});
+ const budget=h*60,used=()=>w.reduce((a,o)=>a+o.m,0);
+ while(used()>budget&&w.some(o=>o.m>15)){w.sort((a,b)=>b.m-a.m);w[0].m-=5}
+ while(true){let any=false;w.forEach(o=>{if(o.m>0){const c=Math.min(o.m,o.m>60?45:o.m);o.m-=c;q.push({s:o.s,min:c});any=true}});if(!any)break}
+ let [hh,mm]=st.split(':').map(Number),cur=hh*60+mm,blocks=[];
+ const at=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+ q.forEach((b,i)=>{blocks.push({s:b.s,min:b.min,at:at(cur),done:false});cur+=b.min;if(i<q.length-1){blocks.push({s:0,min:10,at:at(cur)});cur+=10}});
+ S.plan={date:day(1),h,st,blocks};save();render()
+}
+
+function vQuiz(){
+ const all=BANK.concat(S.qs.map(q=>[q.q,q.o,q.a,'Your own question.']));
+ if(!quiz)return head('GK Quiz','Test your general knowledge')+`
+ <div class="card"><div class="stat"><div><div class="mut">Best score</div><div class="big">${S.best}</div></div><div><div class="mut">Questions</div><div class="big">${all.length}</div></div></div>
+ <button style="width:100%;margin-top:14px" onclick="startQuiz()">Start an 8-question round</button></div>
+ <div class="card"><h3>Add your own question</h3>
+ <input id="qq" placeholder="Question" style="margin-bottom:8px">
+ ${[0,1,2,3].map(i=>`<div class="row" style="margin-bottom:6px;flex-wrap:nowrap"><input type="radio" name="qa" value="${i}" ${i==0?'checked':''} style="width:22px;flex:none" aria-label="Correct answer"><input id="qo${i}" placeholder="Option ${'ABCD'[i]}"></div>`).join('')}
+ <p class="mut">Select the circle next to the correct answer.</p><button class="g" onclick="addQ()">Save question</button></div>
+ ${S.qs.length?`<div class="card"><h3>Your questions</h3>${S.qs.map((q,i)=>`<div class="blk"><div class="m" style="--c:var(--acc)">${esc(q.q)}</div><button class="x" onclick="S.qs.splice(${i},1);save();render()" aria-label="Delete">✕</button></div>`).join('')}</div>`:''}`;
+ if(quiz.i>=quiz.q.length){if(quiz.sc>S.best){S.best=quiz.sc;save()}const r=quiz;quiz=null;
+  return head('Round complete','')+`<div class="card" style="text-align:center"><div class="big">${r.sc} / ${r.q.length}</div><p>${r.sc>=r.q.length*.75?'Excellent work!':r.sc>=r.q.length/2?'Good effort. Try again to beat it.':'Keep practising, you’ll improve.'}</p><button onclick="startQuiz()">Play again</button> <button class="g" onclick="quiz=null;render()">Back</button></div>`}
+ const c=quiz.q[quiz.i];
+ return head('GK Quiz','Question '+(quiz.i+1)+' of '+quiz.q.length+' · Score '+quiz.sc)+`<div class="card"><div class="bar" style="--c:var(--acc)"><i style="width:${quiz.i/quiz.q.length*100}%"></i></div><div class="q">${esc(c[0])}</div>
+ ${c[1].map((o,i)=>`<button class="opt ${quiz.pick==null?'':i==c[2]?'ok':i==quiz.pick?'no':''}" ${quiz.pick==null?'':'disabled'} onclick="pick(${i})">${esc(o)}</button>`).join('')}
+ ${quiz.pick!=null?`<p class="mut" style="margin:12px 0"><b>${quiz.pick==c[2]?'Correct!':'Not quite.'}</b> ${esc(c[3])}</p><button onclick="quiz.i++;quiz.pick=null;render()">${quiz.i+1>=quiz.q.length?'See result':'Next question'}</button>`:''}</div>`;
+}
+function startQuiz(){const all=BANK.concat(S.qs.map(q=>[q.q,q.o,q.a,'Your own question.']));
+ quiz={q:all.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).slice(0,8).map(x=>x[1]),i:0,sc:0,pick:null};render()}
+function pick(i){quiz.pick=i;if(i==quiz.q[quiz.i][2])quiz.sc++;render()}
+function addQ(){const q=$('#qq').value.trim(),o=[0,1,2,3].map(i=>$('#qo'+i).value.trim());if(!q||o.some(x=>!x)){alert('Fill in the question and all four options.');return}
+ S.qs.push({q,o,a:+document.querySelector('[name=qa]:checked').value});save();render()}
+render();
+</script></body></html>
