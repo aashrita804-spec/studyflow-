@@ -1,0 +1,11 @@
+{
+  "name": "StudyFlow",
+  "short_name": "StudyFlow",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f2f5fb",
+  "theme_color": "#14213d",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
